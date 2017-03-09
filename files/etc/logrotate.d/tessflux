@@ -1,0 +1,9 @@
+/var/log/tessflux.log {
+	copytruncate
+	daily
+	dateext
+	rotate 7
+	missingok
+	notifempty
+	compress
+}

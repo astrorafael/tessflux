@@ -1,0 +1,96 @@
+# ------------------------------------------------------------------------------------
+# Copyright (c) 2014 Rafael Gonzalez.
+#
+# See the LICENSE file for details
+# ------------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------#
+[global]
+
+# File where log is stored, if any
+# Leave blank if no logfile is desired
+# Not reloadable property
+log_file = /var/log/tessflux.log
+
+# component log level (debug, info, warn, error, critical)
+# reloadable property
+log_level = info
+
+#------------------------------------------------------------------------------#
+
+[influxdb]
+
+# InfluxDB HTTP Client configuration
+
+# Where InfluxDB is listening
+# reloadable property
+url = http://localhost:8086
+
+# Influxdb Database name
+dbname = pruebas
+
+# InfluxDB measurements "table" name
+measurement = readings
+
+# Body format
+body = %(meas)s,name=%(name)s mag=%(mag)s,freq=%(freq)s,tsky=%(tsky)s,tamb=%(tamb)s,wdBm=%(wdBm)s %(tstamp)d
+
+# Display periodic stats to log file
+stats = yes
+
+# component log level (debug, info, warn, error, critical)
+# reloadable property
+log_level = info
+
+#------------------------------------------------------------------------------#
+
+[mqtt]
+
+# MQTT Client config
+
+# Broker to connect. Twisted-style endpoint
+# Not reloadable property
+broker = tcp:test.mosquitto.org:1883
+
+# Username/password credentials
+# leave blank if not needed
+# non reloadable properies
+username = 
+password = 
+
+# Keepalive connection (in seconds)
+# Not reloadable property
+keepalive = 60
+
+# MQTT topics to subscribe for readings
+# Reloadable property
+topics = STARS4ALL/+/reading
+
+# MQTT payload validation
+# Reloadable property
+validation = yes
+
+# Instrument White List.
+# Discards instruments readings and registrations 
+# whose name do not belong to this comma separated list
+# Useful to keep your own readings database when sharing
+# MQTT topic with other TESS instruments
+# Leave blank if not used.
+# Reloadable property
+whitelist = 
+
+# Instrument Black List.
+# Discards instruments readings and registrations 
+# whose name belong to this comma separated list
+# Useful to discard a particular "noisy" instruments
+# with lots of readings
+# Leave blank if not used.
+# Reloadable property
+blacklist = 
+
+# Display periodic stats to log file
+stats = yes
+
+# namespace log level (debug, info, warn, error, critical)
+# Reloadable property
+log_level = info

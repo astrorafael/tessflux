@@ -1,0 +1,6 @@
+include versioneer.py
+include ema/_version.py
+include README.md
+include files/etc/init.d/tessflux
+include files/etc/tessflux/config.example
+include files/etc/logrotate.d/tessflux

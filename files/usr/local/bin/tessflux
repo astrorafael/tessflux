@@ -1,0 +1,3 @@
+#!/bin/sh
+python -m tessflux -c /etc/tessflux/config $*
+
