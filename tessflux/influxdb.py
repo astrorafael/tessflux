@@ -178,7 +178,7 @@ class InfluxDBService(Service):
                     row['meas']   = self.options['measurement']
                     # Convert to InfluxDB format
                     datapoint = MONITORING_BODY % row
-                     # From UNICODE to simple strimg
+                    # From UNICODE to simple strimg
                     datapoint = str(datapoint)
                     samples.append(datapoint)
                     log.debug("{datapoint}", datapoint=datapoint)
@@ -212,6 +212,7 @@ class InfluxDBService(Service):
         log.debug("reported {message}", message=failure.getErrorMessage())
         self.nfailures += 1
         return failure
+
 
     def _okResponse(self, response):
         log.debug("from {response.request.absoluteURI} => {response.code}", response=response)
