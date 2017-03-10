@@ -74,11 +74,10 @@ class BeginningPrinter(Protocol):
     def dataReceived(self, bytes):
         if self.remaining:
             display = bytes[:self.remaining]
-            log.debug("{m}",m=display)
+            log.error("{m}",m=display)
             self.remaining -= len(display)
 
     def connectionLost(self, reason):
-        log.debug('Finished receiving body: {m}', m=reason.getErrorMessage())
         self.finished.callback(None)
 
 
@@ -93,16 +92,21 @@ class InfluxDBService(Service):
         setLogLevel(namespace='influxdb', levelStr=self.options['log_level'])
         setLogLevel(namespace='twisted.web.client._HTTP11ClientFactory', levelStr='warn')
         self.resetCounters()
+      
 
     
     def startService(self):
         log.info("starting {name}", name=self.name)
         Service.startService(self)
+        self.running = True
         self.probe()
+        self.createDB()
+        reactor.callLater(0, self.loop)
 
     
     def stopService(self):
         Service.stopService(self)
+        self.running = False
 
 
     #---------------------
@@ -155,10 +159,22 @@ class InfluxDBService(Service):
             log.error('{excp!r}', excp=e)
             raise
         else:
-            if resp.status_code != 204:
-                raise RuntimeError("InfluxDB not ready")
+            resp.raise_for_status()
             log.info("found InfluxDB version {version}", version=resp.headers['X-Influxdb-Version'])
-            reactor.callLater(0, self.loop)
+          
+          
+    def createDB(self):
+        '''Create InfluxDB Database'''
+        params = {'q': "CREATE DATABASE %s" % self.options['dbname'] }
+        try:
+            log.info("creating InfluxDB (if not exists at) {url}", url=self.options['url'])
+            resp = requests.post(self.options['url'] + '/query', params=params, timeout=PROBE_TIMEOUT)
+        except Exception as e:
+            log.error('{excp!r}', excp=e)
+            raise
+        else:
+            resp.raise_for_status()
+            log.info("{resp} => {resp.text}", resp=resp)
 
 
     @inlineCallbacks
@@ -167,7 +183,7 @@ class InfluxDBService(Service):
         Returns a deferred that when triggered returns True or False
         '''
         log.debug("called InfluxDB writter main loop ...")
-        while True:
+        while self.running:
             samples = []
             for i in xrange(0,self.options['batch']):
                 try:
@@ -186,6 +202,7 @@ class InfluxDBService(Service):
                     log.error('{excp!r}', excp=e)
                     reactor.callLater(0, reactor.stop)
             status_code = yield self.write(samples)
+        log.info("stopped InfluxDB writer loop")
 
 
     def write(self, samples):
