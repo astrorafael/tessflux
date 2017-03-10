@@ -26,6 +26,9 @@ log_level = info
 # reloadable property
 url = http://localhost:8086
 
+# Data definition file where the database and retention policies are created
+schema = /etc/tessflux/influxdb
+
 # Influxdb Database name
 dbname = pruebas
 

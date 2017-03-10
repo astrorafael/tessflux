@@ -162,13 +162,16 @@ class InfluxDBService(Service):
             resp.raise_for_status()
             log.info("found InfluxDB version {version}", version=resp.headers['X-Influxdb-Version'])
           
-          
+
     def createDB(self):
         '''Create InfluxDB Database'''
-        params = {'q': "CREATE DATABASE %s" % self.options['dbname'] }
+        with  open(self.options['schema'], 'rb') as f:
+            contents = '\n'.join(f.readlines())
+        params = {'q': contents}
+        #params = {'q': "CREATE DATABASE %s" % self.options['dbname'] }
         try:
             log.info("creating InfluxDB (if not exists at) {url}", url=self.options['url'])
-            resp = requests.post(self.options['url'] + '/query', params=params, timeout=PROBE_TIMEOUT)
+            resp = requests.post(self.options['url'] + '/query', data=params, timeout=PROBE_TIMEOUT)
         except Exception as e:
             log.error('{excp!r}', excp=e)
             raise

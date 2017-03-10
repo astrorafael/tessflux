@@ -1,12 +1,9 @@
 Prioridad alta
 ==============
 
-Creacion de la base de datos con HTTP
-Creacion de Retention policies con HTTP
-
 Prioridad baja
 ===============
 
 DeferredQueue con deque
-
+Autenticiacion y creacion de usuarios con roles
 
