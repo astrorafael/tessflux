@@ -24,7 +24,7 @@ from collections import deque
 from twisted          import __version__ as __twisted_version__
 from twisted.logger   import Logger, LogLevel
 from twisted.internet import task, reactor, defer
-from twisted.internet.defer  import inlineCallbacks, returnValue, DeferredList, DeferredQueue
+from twisted.internet.defer   import inlineCallbacks
 from twisted.internet.threads import deferToThread
 
 #--------------
@@ -37,8 +37,10 @@ from tessflux.logger import setLogLevel
 
 from tessflux.service.reloadable import MultiService
 
-from tessflux.influxdb       import InfluxDBService
-from tessflux.mqttsubs       import MQTTService
+from tessflux.influxdb import InfluxDBService
+from tessflux.mqttsubs import MQTTService
+
+from tessflux.defer    import DeferredQueue
 
 # ----------------
 # Module constants

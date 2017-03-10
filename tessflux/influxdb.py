@@ -200,7 +200,6 @@ class InfluxDBService(Service):
                     # From UNICODE to simple strimg
                     datapoint = str(datapoint)
                     samples.append(datapoint)
-                    log.debug("{datapoint}", datapoint=datapoint)
                 except Exception as e:
                     log.error('{excp!r}', excp=e)
                     reactor.callLater(0, reactor.stop)
@@ -215,7 +214,7 @@ class InfluxDBService(Service):
         '''
         parameters = "/write?db=%s\n" % self.options['dbname']
         body = '\n'.join(samples)
-        log.debug("body = \n{body}", body=body)
+        log.debug("writting the following samples = \n{body}", body=body)
         body = FileBodyProducer(StringIO(body))
         d = self.agent.request('POST',
                 self.options['url'] + parameters,
