@@ -32,8 +32,10 @@ dbname = pruebas
 # InfluxDB measurements "table" name
 measurement = readings
 
-# Body format
-body = %(meas)s,name=%(name)s mag=%(mag)s,freq=%(freq)s,tsky=%(tsky)s,tamb=%(tamb)s,wdBm=%(wdBm)s %(tstamp)d
+# Batch size
+# In is far more efficient to write samples to InfluxDB in batches
+# This parameter specifies the batch size
+batch = 1
 
 # Display periodic stats to log file
 stats = yes
