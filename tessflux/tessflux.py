@@ -63,7 +63,7 @@ class TESSFluxDBService(MultiService):
     NAME = 'MQTT To InfluxDB converter'
 
     # Stats period task in seconds
-    T_STAT = 60
+    T_STAT = 3600
    
     def __init__(self, options, cfgFilePath):
         MultiService.__init__(self)
