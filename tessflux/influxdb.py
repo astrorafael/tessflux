@@ -51,6 +51,9 @@ PROBE_TIMEOUT = 5
 # Influx DB Write request Body Format
 MONITORING_BODY="%(meas)s,name=%(name)s mag=%(mag)s,freq=%(freq)s,tsky=%(tsky)s,tamb=%(tamb)s,wdBm=%(wdBm)s %(tstamp)d"
 
+# Nano seconds in a second
+NANOSECONDS = 1000000000
+
 # ----------------
 # Global functions
 # -----------------
@@ -165,30 +168,35 @@ class InfluxDBService(Service):
         '''
         log.debug("called InfluxDB writter main loop ...")
         while True:
-            try:
-                row           = yield self.parent.queue.get()
-                self.nrequests += 1
-                row['tstamp'] -= INFLUXDB_EPOCH
-                row['tstamp'] = (10**9)*row['tstamp'].total_seconds()
-                row['dbname'] = self.options['dbname']
-                row['meas']   = self.options['measurement']
-                status_code   = yield self.write(row)
-            except Exception as e:
-                log.error('{excp!r}', excp=e)
-                reactor.callLater(0, reactor.stop)
+            samples = []
+            for i in xrange(0,self.options['batch']):
+                try:
+                    row           = yield self.parent.queue.get()
+                    self.nrequests += 1
+                    row['tstamp'] -= INFLUXDB_EPOCH
+                    row['tstamp'] = NANOSECONDS*row['tstamp'].total_seconds()
+                    row['meas']   = self.options['measurement']
+                    # Convert to InfluxDB format
+                    datapoint = MONITORING_BODY % row
+                     # From UNICODE to simple strimg
+                    datapoint = str(datapoint)
+                    samples.append(datapoint)
+                    log.debug("{datapoint}", datapoint=datapoint)
+                except Exception as e:
+                    log.error('{excp!r}', excp=e)
+                    reactor.callLater(0, reactor.stop)
+            status_code = yield self.write(samples)
 
 
-    def write(self, row):
+    def write(self, samples):
         '''
         Writes a sample into InfluxDB with proper format.
         Returns a deferred with the respone object as callback argument
         '''
-        datapoint = MONITORING_BODY % row
-        log.info("{datapoint}", datapoint=datapoint)
-        parameters = "/write?db=%(dbname)s\n" % row
-        # From UNICODE to simple strimg
-        datapoint = str(datapoint)
-        body = FileBodyProducer(StringIO(datapoint))
+        parameters = "/write?db=%s\n" % self.options['dbname']
+        body = '\n'.join(samples)
+        log.debug("body = \n{body}", body=body)
+        body = FileBodyProducer(StringIO(body))
         d = self.agent.request('POST',
                 self.options['url'] + parameters,
                 Headers(

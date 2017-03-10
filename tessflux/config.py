@@ -95,7 +95,7 @@ def loadCfgFile(path):
     options['influxdb']['url']        = parser.get("influxdb","url")
     options['influxdb']['dbname']     = parser.get("influxdb","dbname")
     options['influxdb']['measurement'] = parser.get("influxdb","measurement")
-    options['influxdb']['batch']      = parser.get("influxdb","batch")
+    options['influxdb']['batch']      = parser.getint("influxdb","batch")
     options['influxdb']['log_level']  = parser.get("influxdb","log_level")
     options['influxdb']['stats']      = parser.getboolean("influxdb","stats")
 
