@@ -90,7 +90,7 @@ class TESSFluxDBService(MultiService):
            
     def startService(self):
         '''
-        Starts only two services and see if we can continue.
+        Starts database service and see if we can continue.
         '''
         log.info('starting {name} {version} using Twisted {tw_version}', 
             name=self.name,
