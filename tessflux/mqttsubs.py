@@ -291,7 +291,8 @@ class MQTTService(ClientService):
         '''
         MQTT Publish message Handler
         '''
-        now = datetime.datetime.utcnow()
+        # Timestamp rounded to nearest second
+        now = (datetime.datetime.utcnow() + datetime.timedelta(seconds=0.5)).replace(microsecond=0)
         self.nreadings += 1
         log.debug("payload={payload}", payload=payload)
         try:
