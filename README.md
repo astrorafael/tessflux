@@ -7,6 +7,7 @@ MQTT to InfluxDB TESS data converter.
 | [Description](README.md#Description)                                       |
 | [Installation](README.md#Installation)                                     |
 | [Configuration](README.md#Configuration)                                   |
+| [Data Model](README.md#DataModel)                                          |
 | [Logging]((README.md#Logging)                                              |
 
 ## <a name="Description"> Description
