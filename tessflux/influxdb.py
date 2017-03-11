@@ -143,7 +143,7 @@ class InfluxDBService(Service):
             return
         # get stats
         result = self.getCounters()
-        log.info("InfluxDB Stats [Requested, Ok, Reject, Fail] = {counters!s}", counters=result)
+        log.info("InfluxDB Write Stats [Requested, Ok, Reject, Fail] = {counters!s}", counters=result)
 
     # --------------
     # Helper methods
@@ -191,7 +191,6 @@ class InfluxDBService(Service):
             for i in xrange(0,self.options['batch']):
                 try:
                     row           = yield self.parent.queue.get()
-                    self.nrequests += 1
                     row['tstamp'] -= INFLUXDB_EPOCH
                     row['tstamp'] = NANOSECONDS*row['tstamp'].total_seconds()
                     row['meas']   = self.options['measurement']
@@ -212,6 +211,7 @@ class InfluxDBService(Service):
         Writes a sample into InfluxDB with proper format.
         Returns a deferred with the respone object as callback argument
         '''
+        self.nrequests += 1
         parameters = "/write?db=%s\n" % self.options['dbname']
         body = '\n'.join(samples)
         log.debug("writting the following samples = \n{body}", body=body)

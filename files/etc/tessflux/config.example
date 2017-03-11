@@ -30,7 +30,7 @@ url = http://localhost:8086
 schema = /etc/tessflux/influxdb
 
 # Influxdb Database name
-dbname = pruebas
+dbname = tessdb
 
 # InfluxDB measurements "table" name
 measurement = readings
@@ -38,7 +38,7 @@ measurement = readings
 # Batch size
 # In is far more efficient to write samples to InfluxDB in batches
 # This parameter specifies the batch size
-batch = 1
+batch = 10
 
 # Display periodic stats to log file
 stats = yes

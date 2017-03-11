@@ -125,12 +125,13 @@ class MQTTService(ClientService):
 
     def resetCounters(self):
         '''Resets stat counters'''
+        self.ntotal    = 0
         self.nreadings = 0
         self.nfilter   = 0
 
 
     def getCounters(self):
-        return [ self.nreadings, self.nfilter ]
+        return [ self.ntotal, self.nreadings, self.nfilter ]
 
 
     def logCounters(self):
@@ -139,7 +140,7 @@ class MQTTService(ClientService):
             return
         # get stats
         result = self.getCounters()
-        log.info("MQTT Stats [Readings, Discarded] = {counters!s}", counters=result)
+        log.info("MQTT Stats [Total, Accepted, Filtered] = {counters!s}", counters=result)
 
 
     # --------------
@@ -293,7 +294,7 @@ class MQTTService(ClientService):
         '''
         # Timestamp rounded to nearest second
         now = (datetime.datetime.utcnow() + datetime.timedelta(seconds=0.5)).replace(microsecond=0)
-        self.nreadings += 1
+        self.ntotal += 1
         log.debug("payload={payload}", payload=payload)
         try:
             payload = str(payload)  # from bytearray to string
