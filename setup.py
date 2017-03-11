@@ -72,7 +72,7 @@ if os.name == "posix":
           install_requires = ['twisted >= 16.3.0','twisted-mqtt', 'requests'],
           data_files       = [ 
               ('/etc/init.d' ,     ['files/etc/init.d/tessflux']),
-              ('/etc/tessflux',  ['files/etc/tessflux/config.example']),
+              ('/etc/tessflux',    ['files/etc/tessflux/config.example','files/etc/tessflux/influxdb.example']),
               ('/etc/logrotate.d', ['files/etc/logrotate.d/tessflux']),
               ('/usr/local/bin',   ['files/usr/local/bin/tessflux']),
             ],

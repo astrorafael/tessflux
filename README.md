@@ -6,62 +6,63 @@ MQTT to InfluxDB TESS data converter.
 |:---------------------------------------------------------------------------|
 | [Description](README.md#Description)                                       |
 | [Installation](README.md#Installation)                                     |
-| [Start/Stop/Reload/Pause]((README.md#StartStopReloadPause)                 |
 | [Configuration](README.md#Configuration)                                   |
+| [Logging]((README.md#Logging)                                              |
 
 ## <a name="Description"> Description
 
-**ema** is a software package that talks to the EMA Weather Station through a serial port or TCP port. Since EMA hardware is rather smart, the server has really very little processing to do, so it can run happily on a Raspberry Pi. 
+**tessflux** is a software package that listens to TESS data published to an MQTT broker and stores the readings in an [InfluxDB time series database](https://www.influxdata.com/open-source/#influxdb). Data written are suitable for real time monitoring through a [Grafana dashboard](http://grafana.org/). 
 
-Main features:
+**tessflux** is being used as part of the [STARS4ALL Project](https://guaix.fis.ucm.es/splpr/TESS-V1).
 
-1. Publishes current and historic data to an MQTT broker.
+TESS is an acronym for Telescope Encoder and Sky Sensor, a gadget designed by [Cristobal Garcia](http://www.observatorioremoto.com/TESS.pdf). The hardware version developed as part of the STARS4ALL Project is an inexpensive WiFi Sky Quality Meter using the same sensor as Unihedron Sky Quality Meter.
 
-2. If voltage threshold is reached it triggers a custom alarm script. Supplied script sends an SMS using the gammu-python package
-
-3. If the roof relay changes state (from open to close and viceversa), it triggers a custom script.
-
-4. Maintains EMA RTC in sync with the host computer RTC.
-
-5. Manages active/inactive auxiliar relay time windows. Shuts down
-host computer if needed. A Respberry Pi with **internal RTC is strongly recommended**.
-
+STARS4ALL is a European Awareness Platform for Sustainable and Social Innovation (CAPSSI) to protect the dark skies in Europe. Light pollution initiatives (LPIs) are developed to raising awareness about the consequences of artificial light at night on human well-being, biodiversity, visibility of stars, safety and energy waste.
 
 ## <a name="Instalation"> Instalation
 
 Only for Linux.
 
-**Warning** You need Debian package libffi-dev to install Pip 'service-identity' requirement
-
-  `sudo pip install ema`
+  `sudo pip install tessflux`
 
   or from GitHub:
 
-    git clone https://github.com/astrorafael/ema.git
-    cd ema
+    git clone https://github.com/astrorafael/tessflux.git
+    cd tessflux
     sudo python setup.py install
 
 
-All executables and custom scripts are copied to `/usr/local/bin`
-
-Type `ema -k` to start the service on foreground with console output
+Type `tessflux -k` to start the service in foreground with console output
 
 An available startup service script for debian-based systems is provided. 
-Type `sudo service ema start` to start it
-Type `sudo update-rc.d emad defaults` to install it at boot time
+Type `sudo service tessflux start` to start it.
+Type `sudo update-rc.d tessflux defaults` to install it at boot time.
 
-### <a name="EMA Server Configuation"> EMA Server Configuation ###
+## <a name="Configuation"> TESSFLUX Configuation ###
 
-By default, file `/etc/ema.d/config` provides the configuration options needed.
-This file is self explanatory. 
+The file `/etc/tessflux/config` provides the configuration options needed. This file is self explanatory. You **need to create** a new `config` file from the provided `/etc/tessflux/config.example`.
 
-In both cases, you need to create a new `config` or `config.ini` file from the examples.
+The Influx database and retention policies are defined in a `/etc/tessflux/influxdb.example`. You **need to create** a new `influxdb` Data Definition File with the database name and policies that suit your needs. See the [InfluxDB data retention documentation](https://docs.influxdata.com/influxdb/v1.2/guides/downsampling_and_retention/). Make sure that the database name specified here is the same as in the `/etc/tessflux/config` file
 
-Some parameters are defined as *reloadable*. Type `sudo service ema reload` for the new configuration to apply without stopping the service.
+## <a name="DataModel"> Data Model ##
 
-### <a name="Logging"> Logging ###
+InfluxDB is a non-relational, schemaless, timeseries database. The *table* concept found in relational SQL maps into the *measurement* concept. The *column* concept found in traditional relational databases map either into *tags* or *fields* as appropiate.
 
-Log file is placed under `/var/log/ema.log` (Linux) or `C:\ema\log\ema.log` (Windows). 
+    - A *tag* is the equivalent of column found in a *dimension table* in Dimensional modelling. 
+    - A *field* is the equivalent of column found a *fact table* in Dimensional modelling. 
+
+The data model created contains only **one measurement** whose name can be configured in `/etc/tessflux/config`) (i.e. `readings`) with the following tags:
+- `name`,for the TESS name.
+
+and the following fields:
+- `mag`,  visual magnitude in magnitudeas/arcsec^2
+- `freq`, the raw frequency measured by the light sensor.
+- `tamb`, the ambient temperature at the TESS enclosure (ºC).
+- `tsky`, the sky temperature sensed by a thermopile(ºC).
+
+## <a name="Logging"> Logging ##
+
+Log file is placed under `/var/log/tessflux.log`. 
 Default log level is `info`. It generates very litte logging at this level.
-On Linux, the log is rotated through the /etc/logrotate.d/ema policy. On Windows, there is no such policy.
+The log is rotated through the /etc/logrotate.d/tessflux policy.
 
