@@ -1,10 +1,2 @@
 CREATE DATABASE "tessdb";
 CREATE RETENTION POLICY "two_hours" ON "tessdb" DURATION 2h  REPLICATION 1 DEFAULT;
-CREATE RETENTION POLICY "a_year"    ON "tessdb" DURATION 52w REPLICATION 1;
-CREATE CONTINUOUS QUERY "cq_30m"    ON "tessdb" 
-BEGIN
-  SELECT mean("tamb") AS "mean_tamb",mean("tsky") AS "mean_tsky",mean("mag") AS "mean_mag",mean("freq") AS "mean_freq"
-  INTO "a_year"."downsampled_readings"
-  FROM "readings"
-  GROUP BY time(60m)
-END;

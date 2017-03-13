@@ -1,6 +1,10 @@
 Prioridad alta
 ==============
 
+Añadir seqno como field
+Quitar la otra retention policy y la continous query
+Renombrar readings como rt_readings
+
 Prioridad baja
 ===============
 

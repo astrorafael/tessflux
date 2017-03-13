@@ -57,6 +57,12 @@ if os.name == "posix":
 
     import shlex
 
+  # Some fixes before setup
+  if not os.path.exists("/etc/tessflux"):
+    print("creating directory /etc/tessflux")
+    args = shlex.split( "mkdir /etc/tessflux")
+    subprocess.call(args)
+
     setup(name             = 'tessflux',
           version          = versioneer.get_version(),
           cmdclass         = versioneer.get_cmdclass(),
@@ -69,7 +75,7 @@ if os.name == "posix":
           url              = 'http://github.com/astrorafael/tessflux/',
           classifiers      = classifiers,
           packages         = ["tessflux",  "tessflux.service", "tessflux.test", ],
-          install_requires = ['twisted >= 16.3.0','twisted-mqtt', 'requests'],
+          install_requires = ['twisted == 16.6.0','twisted-mqtt', 'requests'],
           data_files       = [ 
               ('/etc/init.d' ,     ['files/etc/init.d/tessflux']),
               ('/etc/tessflux',    ['files/etc/tessflux/config.example','files/etc/tessflux/influxdb.example']),
