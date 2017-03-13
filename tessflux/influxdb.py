@@ -49,7 +49,7 @@ INFLUXDB_EPOCH = datetime.datetime(year=1970,month=1,day=1)
 PROBE_TIMEOUT = 5
 
 # Influx DB Write request Body Format
-MONITORING_BODY="%(meas)s,name=%(name)s mag=%(mag)s,freq=%(freq)s,tsky=%(tsky)s,tamb=%(tamb)s,wdBm=%(wdBm)s %(tstamp)d"
+MONITORING_BODY="%(meas)s,name=%(name)s seq=%(seq)s,mag=%(mag)s,freq=%(freq)s,tsky=%(tsky)s,tamb=%(tamb)s,wdBm=%(wdBm)s %(tstamp)d"
 
 # Nano seconds in a second
 NANOSECONDS = 1000000000
