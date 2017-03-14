@@ -57,11 +57,11 @@ if os.name == "posix":
 
     import shlex
 
-  # Some fixes before setup
-  if not os.path.exists("/etc/tessflux"):
-    print("creating directory /etc/tessflux")
-    args = shlex.split( "mkdir /etc/tessflux")
-    subprocess.call(args)
+    # Some fixes before setup
+    if not os.path.exists("/etc/tessflux"):
+      print("creating directory /etc/tessflux")
+      args = shlex.split( "mkdir /etc/tessflux")
+      subprocess.call(args)
 
     setup(name             = 'tessflux',
           version          = versioneer.get_version(),
@@ -78,11 +78,15 @@ if os.name == "posix":
           install_requires = ['twisted == 16.6.0','twisted-mqtt', 'requests'],
           data_files       = [ 
               ('/etc/init.d' ,     ['files/etc/init.d/tessflux']),
+              ('/etc/systemd/system',  ['files/etc/systemd/system/tessflux.service']),
               ('/etc/tessflux',    ['files/etc/tessflux/config.example','files/etc/tessflux/influxdb.example']),
               ('/etc/logrotate.d', ['files/etc/logrotate.d/tessflux']),
               ('/usr/local/bin',   ['files/usr/local/bin/tessflux']),
             ],
         )
+
+    args = shlex.split( "systemctl daemon-reload")
+    subprocess.call(args)
 
 else:
   pass

@@ -1,0 +1,21 @@
+[Unit]
+Description=MQTT to InfluxDB Writter for TESS data
+After=network.target
+
+[Service]
+Type=forking
+PIDFile=/var/run/tessflux.pid
+# EnvironmentFile=-/etc/default/tessflux
+# ExecStartPre=-/usr/libexec/postfix/aliasesdb
+# ExecStartPre=-/usr/libexec/postfix/chroot-update
+ExecStart=/usr/bin/env python -m tessflux --config /etc/tessflux/config
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStop=/bin/kill -TERM $MAINPID
+
+#KillMode=process
+#Restart=on-failure
+#RestartSec=42s
+
+
+[Install]
+WantedBy=multi-user.target
