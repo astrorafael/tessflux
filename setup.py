@@ -55,6 +55,18 @@ classifiers = [
 
 if os.name == "posix":
 
+    datafiles = [
+      ('/etc/tessflux',    ['files/etc/tessflux/config.example','files/etc/tessflux/influxdb.example']),
+      ('/etc/logrotate.d', ['files/etc/logrotate.d/tessflux']),
+      ('/usr/local/bin',   ['files/usr/local/bin/tessflux']),
+    ]
+
+    if os.path.exists("/etc/systemd"):
+      datafiles.append( ('/etc/systemd/system', ['files/etc/systemd/system/tessflux.service']) )
+    else:
+      datafiles.append( ('/etc/init.d', ['files/etc/init.d/tessflux']))
+
+
     import shlex
 
     # Some fixes before setup
@@ -76,17 +88,12 @@ if os.name == "posix":
           classifiers      = classifiers,
           packages         = ["tessflux",  "tessflux.service", "tessflux.test", ],
           install_requires = ['twisted == 16.6.0','twisted-mqtt', 'requests'],
-          data_files       = [ 
-              ('/etc/init.d' ,     ['files/etc/init.d/tessflux']),
-              ('/etc/systemd/system',  ['files/etc/systemd/system/tessflux.service']),
-              ('/etc/tessflux',    ['files/etc/tessflux/config.example','files/etc/tessflux/influxdb.example']),
-              ('/etc/logrotate.d', ['files/etc/logrotate.d/tessflux']),
-              ('/usr/local/bin',   ['files/usr/local/bin/tessflux']),
-            ],
+          data_files       = datafiles
         )
-
-    args = shlex.split( "systemctl daemon-reload")
-    subprocess.call(args)
+    
+    if os.path.exists("/etc/systemd"):
+      args = shlex.split( "systemctl daemon-reload")
+      subprocess.call(args)
 
 else:
   pass
