@@ -1,10 +1,37 @@
 Prioridad alta
 ==============
 
-Añadir seqno como field
 
 Prioridad baja
 ===============
 
-Autenticacion y creacion de usuarios con roles
+renombrar mag y freq como mag1 y freq1
+
+Hacer que el fichero DDL con la creqcion de los usuarios no resida en
+la maquina destino (brecha de seguridad)
+
+# Autenticacion y Autorización
+
+- Habilitar la autenticacion en el fichero de configuración de influxdb
+
+- Autorizacion y creacion de usuarios con roles
+	1) Usuario admin
+	CREATE USER "admin" WITH PASSWORD '<password>' WITH ALL PRIVILEGES;
+
+	2) Usuario escritor para tessflux
+	CREATE USER "tessflux" WITH PASSWORD '<password>';
+	GRANT ALL ON "tessdb" TO "tessflux";
+
+	3) Usuario lector para Grafana
+	CREATE USER "grafana" WITH PASSWORD '<password>';
+	GRANT READ ON "tessdb" TO "grafana";
+
+
+trozo para añadir autenticacion básica a Twisted HTTP client
+
+	from base64 import b64encode
+	authorization = b64encode(b"username:password")
+	getting = agent.request(..., Headers({b"authorization": [b"Basic " + authorization]}))
+
 Reload functionality. Worth it ?
+Pause/Resume
