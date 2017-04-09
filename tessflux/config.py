@@ -94,7 +94,10 @@ def loadCfgFile(path):
     options['influxdb'] = {}
     options['influxdb']['url']        = parser.get("influxdb","url")
     options['influxdb']['dbname']     = parser.get("influxdb","dbname")
+    options['influxdb']['username']   = parser.get("influxdb","username")
+    options['influxdb']['password']   = parser.get("influxdb","password")
     options['influxdb']['schema']     = parser.get("influxdb","schema")
+    options['influxdb']['retpol']     = parser.get("influxdb","retpol")
     options['influxdb']['measurement'] = parser.get("influxdb","measurement")
     options['influxdb']['batch']      = parser.getint("influxdb","batch")
     options['influxdb']['log_level']  = parser.get("influxdb","log_level")

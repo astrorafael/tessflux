@@ -14,6 +14,9 @@ import datetime
 import requests
 
 from StringIO import StringIO
+from base64   import b64encode
+
+import os.path
 
 # ---------------
 # Twisted imports
@@ -92,7 +95,10 @@ class InfluxDBService(Service):
         setLogLevel(namespace='influxdb', levelStr=self.options['log_level'])
         setLogLevel(namespace='twisted.web.client._HTTP11ClientFactory', levelStr='warn')
         self.resetCounters()
-      
+        self.credentials = None
+        if self.options['username'] != '':
+            self.credentials = b64encode(bytes(self.options['username'] + ':' + self.options['password']))
+
 
     
     def startService(self):
@@ -164,11 +170,14 @@ class InfluxDBService(Service):
           
 
     def createDB(self):
-        '''Create InfluxDB Database'''
+        '''Create InfluxDB Database if exists'''
+        if not os.path.isfile(self.options['schema']):
+            log.info("skipping InfluxDB database creation at {url}", url=self.options['url'])
+            return
+
         with  open(self.options['schema'], 'rb') as f:
             contents = '\n'.join(f.readlines())
         params = {'q': contents}
-        #params = {'q': "CREATE DATABASE %s" % self.options['dbname'] }
         try:
             log.info("creating InfluxDB (if not exists at) {url}", url=self.options['url'])
             resp = requests.post(self.options['url'] + '/query', data=params, timeout=PROBE_TIMEOUT)
@@ -212,17 +221,23 @@ class InfluxDBService(Service):
         Returns a deferred with the respone object as callback argument
         '''
         self.nrequests += 1
-        parameters = "/write?db=%s\n" % self.options['dbname']
+        full_url = self.options['url'] + "/write?db=%s&rp=%s\n" % (self.options['dbname'], self.options['retpol'])
         body = '\n'.join(samples)
+        bodyobj = FileBodyProducer(StringIO(body))
+        
+        if self.credentials:
+            headers = Headers(
+                    {'User-Agent'    : ['tessflux'], 
+                    'Content-Type'   : ['application/x-www-form-urlencoded'],
+                    b'Authorization' : [ b'Basic ' + self.credentials ]
+                    })
+        else:
+            headers = Headers(
+                    {'User-Agent'    : ['tessflux'], 
+                    'Content-Type'   : ['application/x-www-form-urlencoded'],
+                    })
         log.debug("writting the following samples = \n{body}", body=body)
-        body = FileBodyProducer(StringIO(body))
-        d = self.agent.request('POST',
-                self.options['url'] + parameters,
-                Headers(
-                    {'User-Agent':  ['tessflux'], 
-                    'Content-Type': ['application/x-www-form-urlencoded']
-                    }),
-                body)
+        d = self.agent.request('POST', full_url, headers, bodyobj)
         d.addCallbacks(self._okResponse, self._failResponse)
         return d
    

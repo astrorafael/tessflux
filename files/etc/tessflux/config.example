@@ -27,12 +27,22 @@ log_level = info
 url = http://localhost:8086
 
 # Data definition file where the database and retention policies are created
-schema = /etc/tessflux/influxdb
+# Leave blank if this is created beforehand.
+# See /etc/tessflux/config.example
+schema = 
 
 # Influxdb Database name
 dbname = tessdb
 
-# InfluxDB measurement "table" name
+# InfluxDB Basic Authentication
+# Leave blank if not used
+username = 
+password = 
+
+# InfluxDB Retention policy name for real time monitoring
+retpol = two_days
+
+# InfluxDB measurement "table" name for real time monitoring
 measurement = readings
 
 # Batch size
