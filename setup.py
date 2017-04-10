@@ -88,7 +88,7 @@ if os.name == "posix":
           url              = 'http://github.com/astrorafael/tessflux/',
           classifiers      = classifiers,
           packages         = ["tessflux",  "tessflux.service", "tessflux.test", ],
-          install_requires = ['twisted == 16.6.0','twisted-mqtt', 'requests'],
+          install_requires = ['twisted','twisted-mqtt', 'requests'],
           data_files       = datafiles
         )
     
