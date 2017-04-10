@@ -59,12 +59,13 @@ if os.name == "posix":
       ('/etc/tessflux',    ['files/etc/tessflux/config.example','files/etc/tessflux/influxdb.example']),
       ('/etc/logrotate.d', ['files/etc/logrotate.d/tessflux']),
       ('/usr/local/bin',   ['files/usr/local/bin/tessflux']),
+      ('/etc/init.d',      ['files/etc/init.d/tessflux']),
     ]
 
-    if os.path.exists("/etc/systemd"):
-      datafiles.append( ('/etc/systemd/system', ['files/etc/systemd/system/tessflux.service']) )
-    else:
-      datafiles.append( ('/etc/init.d', ['files/etc/init.d/tessflux']))
+    # if os.path.exists("/etc/systemd"):
+    #   datafiles.append( ('/etc/systemd/system', ['files/etc/systemd/system/tessflux.service']) )
+    # else:
+    #   datafiles.append( ('/etc/init.d', ['files/etc/init.d/tessflux']))
 
 
     import shlex
@@ -91,9 +92,9 @@ if os.name == "posix":
           data_files       = datafiles
         )
     
-    if os.path.exists("/etc/systemd"):
-      args = shlex.split( "systemctl daemon-reload")
-      subprocess.call(args)
+    # if os.path.exists("/etc/systemd"):
+    #   args = shlex.split( "systemctl daemon-reload")
+    #   subprocess.call(args)
 
 else:
   pass
