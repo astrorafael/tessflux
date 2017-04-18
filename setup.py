@@ -62,6 +62,12 @@ if os.name == "posix":
       ('/etc/init.d',      ['files/etc/init.d/tessflux']),
     ]
 
+    # Python PIP package 'requests' is also needed. 
+    # However, it conflicts with the
+    # apt installed version of python-requests and breaks pip
+    requirements = ['twisted','twisted-mqtt']
+
+
     # if os.path.exists("/etc/systemd"):
     #   datafiles.append( ('/etc/systemd/system', ['files/etc/systemd/system/tessflux.service']) )
     # else:
@@ -88,7 +94,7 @@ if os.name == "posix":
           url              = 'http://github.com/astrorafael/tessflux/',
           classifiers      = classifiers,
           packages         = ["tessflux",  "tessflux.service", "tessflux.test", ],
-          install_requires = ['twisted','twisted-mqtt', 'requests'],
+          install_requires = requirements,
           data_files       = datafiles
         )
     
